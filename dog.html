@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dog Running Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #e0f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    #game {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background: #c8e6c9;
+      overflow: hidden;
+    }
+    #dog {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      font-size: 50px;
+      transition: bottom 0.2s;
+    }
+    .obstacle {
+      position: absolute;
+      bottom: 20px;
+      right: 0;
+      font-size: 40px;
+      animation: move 3s linear infinite;
+    }
+    @keyframes move {
+      from { right: -50px; }
+      to { right: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <h1>🐶 Dog Running Game</h1>
+  <p>Press SPACE to jump over obstacles!</p>
+  
+  <div id="game">
+    <div id="dog">🐕</div>
+    <div class="obstacle">🌵</div>
+  </div>
+  
+  <p id="status">Score: 0</p>
+
+  <script>
+    const dog = document.getElementById("dog");
+    const obstacle = document.querySelector(".obstacle");
+    const status = document.getElementById("status");
+    let isJumping = false;
+    let score = 0;
+
+    document.body.addEventListener("keydown", function(event) {
+      if (event.code === "Space" && !isJumping) {
+        isJumping = true;
+        dog.style.bottom = "100px";
+        setTimeout(() => {
+          dog.style.bottom = "20px";
+          isJumping = false;
+        }, 500);
+      }
+    });
+
+    setInterval(() => {
+      const dogBottom = parseInt(window.getComputedStyle(dog).getPropertyValue("bottom"));
+      const obstacleRight = parseInt(window.getComputedStyle(obstacle).getPropertyValue("right"));
+
+      if (obstacleRight > 700 && obstacleRight < 760 && dogBottom <= 40) {
+        status.textContent = "💀 Game Over! Final Score: " + score;
+        obstacle.style.animation = "none"; // stop obstacle
+      } else {
+        score++;
+        status.textContent = "Score: " + score;
+      }
+    }, 100);
+  </script>
+</body>
+</html>

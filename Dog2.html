@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dog Runner 🐶</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --game-height: 240px;
+      --ground-h: 28px;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #eef6ff;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+    #wrap {
+      width: min(680px, 92vw);
+    }
+    h1 { margin: 12px 0 6px; text-align: center; }
+    p { margin: 0 0 10px; text-align: center; color: #444; }
+
+    #game {
+      position: relative;
+      height: var(--game-height);
+      background: linear-gradient(#c8f3ff, #b6e8ff);
+      border: 2px solid #9bd0ff;
+      border-radius: 14px;
+      overflow: hidden;
+      outline: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      cursor: pointer;
+    }
+    #ground {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 0;
+      height: var(--ground-h);
+      background: #b7e3b5;
+      border-top: 2px solid #8fcf8c;
+    }
+    #score {
+      position: absolute;
+      top: 8px; left: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.7);
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    #dog, #obstacle {
+      position: absolute;
+      user-select: none;
+      -webkit-user-select: none;
+      pointer-events: none;
+    }
+    #dog {
+      left: 80px;
+      bottom: calc(var(--ground-h) + 0px);
+      font-size: 48px;
+      transform: translateZ(0);
+    }
+    #obstacle {
+      bottom: calc(var(--ground-h) + 0px);
+      font-size: 44px;
+      transform: translateZ(0);
+    }
+    #overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.25);
+      text-align: center;
+    }
+    #overlay.show { display: flex; }
+    #overlay .card {
+      background: white;
+      padding: 14px 16px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    #overlay button {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid #9bd0ff;
+      background: #e9f4ff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Accessibility hint for keyboard focus */
+    #game:focus-visible { box-shadow: 0 0 0 3px #2563eb55, 0 6px 20px rgba(0,0,0,0.08); }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <h1>Dog Runner 🐶</h1>
+    <p>Press <strong>Space</strong> / <strong>↑</strong> or <strong>tap/click</strong> to jump. Avoid the 🌵.</p>
+
+    <div id="game" tabindex="0" aria-label="Dog Runner game area">
+      <div id="score">Score: 0</div>
+      <div id="dog" role="img" aria-label="dog">🐶</div>
+      <div id="obstacle" role="img" aria-label="cactus">🌵</div>
+      <div id="ground"></div>
+
+      <div id="overlay" aria-live="assertive">
+        <div class="card">
+          <div id="msg">Game Over!</div>
+          <button id="restartBtn" type="button">Restart (R)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const game = document.getElementById('game');
+    const dogEl = document.getElementById('dog');
+    const obsEl = document.getElementById('obstacle');
+    const scoreEl = document.getElementById('score');
+    const overlay = document.getElementById('overlay');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // Positions & physics
+    let dogY = 0;              // height above ground (px)
+    let dogVy = 0;             // vertical velocity (px/s)
+    const jumpV = 700;         // jump impulse
+    const gravity = -2200;     // gravity (negative goes down because bottom increases upward)
+
+    let obsX = 0;              // obstacle left position (px)
+    let speed = 260;           // obstacle speed (px/s)
+    let score = 0;
+    let running = false;
+    let lastTime = null;
+
+    const groundH = parseFloat(getComputedStyle(document.documentElement)
+                     .getPropertyValue('--ground-h'));
+
+    function resizePositions() {
+      // Place obstacle just beyond the right edge on resize or reset
+      obsX = game.clientWidth + 40;
+      setObstacleX(obsX);
+    }
+
+    function setDogBottom(px) {
+      dogEl.style.bottom = (groundH + px) + 'px';
+    }
+
+    function setObstacleX(px) {
+      obsEl.style.left = px + 'px';
+    }
+
+    function jump() {
+      if (!running) return;
+      if (dogY === 0) {
+        dogVy = jumpV;
+      }
+    }
+
+    function aabbOverlap(a, b) {
+      return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+    }
+
+    function gameOver() {
+      running = false;
+      overlay.classList.add('show');
+      document.getElementById('msg').textContent = `Game Over! Final Score: ${score}`;
+    }
+
+    function reset() {
+      score = 0;
+      speed = 260;
+      dogY = 0;
+      dogVy = 0;
+      scoreEl.textContent = 'Score: 0';
+      setDogBottom(0);
+      overlay.classList.remove('show');
+      resizePositions();
+      lastTime = null;
+      running = true;
+      requestAnimationFrame(loop);
+    }
+
+    function loop(ts) {
+      if (!running) return;
+      if (lastTime == null) { lastTime = ts; requestAnimationFrame(loop); return; }
+      const dt = Math.min((ts - lastTime) / 1000, 0.05); // clamp dt for stability
+      lastTime = ts;
+
+      // Physics: dog
+      dogVy += gravity * dt;
+      dogY += dogVy * dt;
+      if (dogY < 0) { dogY = 0; dogVy = 0; }
+      setDogBottom(dogY);
+
+      // Move obstacle
+      obsX -= speed * dt;
+      setObstacleX(obsX);
+
+      // If obstacle goes off-screen, respawn and add score; increase difficulty
+      const obsRectNow = obsEl.getBoundingClientRect();
+      if (obsRectNow.right < 0) {
+        score += 1;
+        scoreEl.textContent = 'Score: ' + score;
+        speed = Math.min(speed + 18, 680); // ramp difficulty
+        const gap = 420 + Math.random() * 320;
+        obsX = game.clientWidth + gap;
+        setObstacleX(obsX);
+      }
+
+      // Collision check (AABB using real DOM rects)
+      const dogRect = dogEl.getBoundingClientRect();
+      const obsRect = obsEl.getBoundingClientRect();
+      if (aabbOverlap(dogRect, obsRect)) {
+        gameOver();
+        return;
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    // Controls
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+        e.preventDefault();
+        jump();
+      } else if (e.code === 'KeyR') {
+        reset();
+      }
+    });
+    game.addEventListener('pointerdown', jump);
+    restartBtn.addEventListener('click', reset);
+    window.addEventListener('resize', () => {
+      // keep things sane on resize; if not running, just reposition obstacle
+      if (!running) { resizePositions(); }
+    });
+
+    // Init
+    game.addEventListener('click', () => game.focus(), { once: true });
+    resizePositions();
+    reset(); // start immediately
+  </script>
+</body>
+</html>

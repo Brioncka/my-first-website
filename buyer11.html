@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyer Intake Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      background: linear-gradient(to bottom right, #e6f0ff, #ffffff);
+      color: #333;
+    }
+    h1, p.header-text {
+      text-align: center;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+      text-align: left;
+      width: 80%;
+    }
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"] {
+      width: 80%;
+      padding: 0.75rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+      width: 80%;
+    }
+    ul li {
+      margin: 0.5rem 0;
+    }
+    ul li label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 80%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #ccc;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    @media (max-width: 600px) {
+      body {
+        margin: 0.5rem;
+      }
+      form {
+        padding: 1rem;
+      }
+      label,
+      input[type="text"],
+      input[type="tel"],
+      input[type="email"],
+      button,
+      ul {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Buyer Intake Form</h1>
+    <p class="header-text">
+      Thank you for your interest in working with me! To better serve you, please complete the intake form below and you will be contacted within 24 hours.
+    </p>
+  </header>
+
+  <form>
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName" required>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName" required>
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" name="phone" required>
+
+    <label for="email">Email Address:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label>Property Type:</label>
+    <ul>
+      <li><label><input type="radio" name="propertyType" value="Single Family" required> Single Family</label></li>
+      <li><label><input type="radio" name="propertyType" value="Condo"> Condo</label></li>
+      <li><label><input type="radio" name="propertyType" value="Townhome"> Townhome</label></li>
+      <li><label><input type="radio" name="propertyType" value="Multifamily"> Multifamily</label></li>
+    </ul>
+
+    <label>Referral Source:</label>
+    <ul>
+      <li><label><input type="radio" name="referralSource" value="Online"> Online</label></li>
+      <li><label><input type="radio" name="referralSource" value="Broker Referral"> Broker Referral</label></li>
+      <li><label><input type="radio" name="referralSource" value="Previous Client/Family/Friend"> Previous Client/Family/Friend</label></li>
+      <li><input type="text" name="referralName" placeholder="Enter name" style="width:100%; margin-top:0.5rem;"></li>
+      <li><label><input type="radio" name="referralSource" value="Other"> Other</label></li>
+      <li><input type="text" name="referralOther" placeholder="Please specify" style="width:100%; margin-top:0.5rem;"></li>
+    </ul>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <footer>
+    <p>Brioncka Russell<br>
+    Real Estate Advisor<br>
+    United Realty Group Inc.<br>
+    Cell: 954-945-0213<br>
+    Email: <a href="mailto:BrionckaRealtor@gmail.com">BrionckaRealtor@gmail.com</a></p>
+  </footer>
+</body>
+</html>

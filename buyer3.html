@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyer Intake Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      background: #f8f9fa;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    ul li {
+      margin: 0.5rem 0;
+    }
+    ul li label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    @media (max-width: 600px) {
+      body {
+        margin: 0.5rem;
+      }
+      form {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Buyer Intake Form</h1>
+  <form>
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName" required>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName" required>
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" name="phone" required>
+
+    <label>Property Type:</label>
+    <ul>
+      <li><label><input type="radio" name="propertyType" value="Single Family" required> Single Family</label></li>
+      <li><label><input type="radio" name="propertyType" value="Condo"> Condo</label></li>
+      <li><label><input type="radio" name="propertyType" value="Townhome"> Townhome</label></li>
+      <li><label><input type="radio" name="propertyType" value="Multifamily"> Multifamily</label></li>
+    </ul>
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
